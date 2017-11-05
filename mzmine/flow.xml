@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<flow name="mzmine">
+	<object 	name="workflowParameters"/>
+	<collection     name="inputParams"/>
+	<object     	name="batch"/>
+	<collection     name="output"/>
+	<collection	name="results"/>
+
+	<action name="begin">
+        <output port="specone"       collection="inputParams"/>
+        <output port="spectwo"       collection="inputParams"/>
+        <output port="specthree"       collection="inputParams"/>
+        <output port="specfour"       collection="inputParams"/>
+        <output port="specfive"       collection="inputParams"/>
+        <output port="specsix"       collection="inputParams"/>
+		<output port="flowParams"	object="workflowParameters"/>
+        <output port="lib" collection="library"/>
+        <output port="metadata_table" object="metadata_table"/>
+	</action>
+
+	<action	name="build_batch">
+		<input	port="flowParams"	object="workflowParameters"/>
+		<input	port="inputParams"	collection="inputParams"/>
+		<output	port="batch"		object="batch"/>
+	</action>
+
+	<action name="run_mzmine">
+		<input port="inputParams"	collection="inputParams"/>
+		<input port="batch"		object="batch"/>
+		<output port="output"		collection="output"/>
+	</action>
+
+	<action name="parse_results">
+		<input port="output"		collection="output"/>
+		<input port="flowParams"	object="workflowParameters"/>
+		<output port="results"		collection="results"/>
+	</action>
+
+    <!-- Intermediate Shim -->
+    <object     	name="ms1_ms2_mgf_file"/>
+    <object     	name="ms2_mgf_file"/>
+    <object     	name="all_features_table"/>
+	<object     	name="ms2_features_table"/>
+
+    <action name="copy_out_ms1_ms2_mgf">
+		<input port="results"		collection="results"/>
+        <output port="ms1_ms2_mgf_file"		object="ms1_ms2_mgf_file"/>
+	</action>
+
+    <action name="copy_out_ms2_mgf">
+		<input port="results"		collection="results"/>
+        <output port="ms2_mgf_file"		object="ms2_mgf_file"/>
+	</action>
+
+    <action name="copy_out_feature_table">
+		<input port="results"		collection="results"/>
+        <output port="all_features_table"		object="ms2_features_table"/>
+	</action>
+
+	<action name="copy_out_all_feature_table">
+		<input port="results"		collection="results"/>
+        <output port="all_features_table"		object="all_features_table"/>
+	</action>
+
+    <!-- Molecular Networking -->
+    <collection name="networking_parameters"/>
+    <collection name="networking_pairs_results_folder"/>
+    <object name="networking_pairs_results_file"/>
+    <object name="networking_pairs_results_file_filtered"/>
+
+    <action name="prep_molecular_networking_parameters">
+        <input port="workflowParameters" object="workflowParameters"/>
+        <input port="mgf_file" object="ms2_mgf_file"/>
+        <output port="networking_parameters" collection="networking_parameters"/>
+    </action>
+
+    <action name="molecular_networking_parallel_step" multiplicity="multiple" type="parallel">
+        <input port="networking_parameters" collection="networking_parameters" transformation="unfolding"/>
+        <input port="mgf_file" object="ms2_mgf_file"/>
+        <input port="workflowParameters" object="workflowParameters"/>
+        <output port="networking_pairs_results_folder" collection="networking_pairs_results_folder"/>
+    </action>
+
+    <action name="merge_networking_tsv_files">
+        <input port="networking_pairs_results_folder" collection="networking_pairs_results_folder"/>
+        <output port="networking_pairs_results_file" object="networking_pairs_results_file"/>
+    </action>
+
+    <action name="filter_networking_edges">
+        <input port="workflowParameters" object="workflowParameters"/>
+        <input port="networking_pairs_results_file" object="networking_pairs_results_file"/>
+        <output port="networking_pairs_results_file_filtered" object="networking_pairs_results_file_filtered"/>
+    </action>
+
+    <!-- Library Search -->
+    <collection name="library"/>
+    <collection name="librarysearch_parameters"/>
+    <collection name="librarysearch_results_folder"/>
+    <object name="librarysearch_results_file"/>
+    <object name="librarysearch_results_file_DB"/>
+
+    <action name="prep_molecular_librarysearch_parameters">
+        <input port="workflowParameters" object="workflowParameters"/>
+        <input port="library" collection="library"/>
+        <output port="librarysearch_parameters" collection="librarysearch_parameters"/>
+    </action>
+
+    <action name="molecular_librarysearch_parallel_step" multiplicity="multiple" type="parallel">
+        <input port="librarysearch_parameters" collection="librarysearch_parameters" transformation="unfolding"/>
+        <input port="mgf_file" object="ms2_mgf_file"/>
+        <input port="library" collection="library"/>
+        <input port="workflowParameters" object="workflowParameters"/>
+        <output port="librarysearch_results_folder" collection="librarysearch_results_folder"/>
+    </action>
+
+    <action name="merge_librarysearch_tsv_files">
+        <input port="librarysearch_results_folder" collection="librarysearch_results_folder"/>
+        <output port="librarysearch_results_file" object="librarysearch_results_file"/>
+    </action>
+
+    <action name="molecular_librarysearch_get_dbannotations">
+        <input port="librarysearch_results_file" object="librarysearch_results_file"/>
+        <output port="librarysearch_results_file_DB" object="librarysearch_results_file_DB"/>
+    </action>
+
+    <!-- Cluster Info -->
+    <object name="metadata_table"/>
+    <object name="enriched_metadata_table"/>
+    <object name="clusterinfo_summary"/>
+    <object name="clusterinfo_summary_enriched"/>
+    <object name="metadata_table"/>
+    <object name="components_table"/>
+
+    <action name="enrich_metadata_table">
+        <input port="workflowParameters" object="workflowParameters"/>
+        <input port="metadata_table" object="metadata_table"/>
+        <output port="enriched_metadata_table" object="enriched_metadata_table"/>
+    </action>
+
+    <action name="clusterinfosummary_creation">
+        <input port="quantification_table" object="ms2_features_table"/>
+        <input port="metadata_table" object="enriched_metadata_table"/>
+        <output port="clusterinfo_summary" object="clusterinfo_summary"/>
+    </action>
+
+    <action name="enrich_clusterinfo_summary">
+        <input port="clusterinfo_summary" object="clusterinfo_summary"/>
+        <input port="librarysearch_results_file_DB" object="librarysearch_results_file_DB"/>
+        <input port="networking_pairs_results_file_filtered" object="networking_pairs_results_file_filtered"/>
+        <output port="clusterinfo_summary_enriched" object="clusterinfo_summary_enriched"/>
+        <output port="components_table" object="components_table"/>
+    </action>
+
+    <!-- Creating Cytoscape Compatible graphML -->
+    <object name="gnps_molecular_network_graphml"/>
+    <action name="metabolomics_convert_graphml">
+        <input  port="networking_pairs_results_file_filtered"       object="networking_pairs_results_file_filtered"/>
+        <input  port="clusterinfo_summary_enriched" object="clusterinfo_summary_enriched"/>
+        <input  port="librarysearch_results_file_DB" object="librarysearch_results_file_DB"/>
+        <output port="gnps_molecular_network_graphml"     object="gnps_molecular_network_graphml"/>
+    </action>
+
+	<!-- Custom Output for Qiita and Ili -->
+
+	<object name="biom_output"/>
+    <action name="metabolomics_convert_biom">
+        <input  port="all_features_table"       object="all_features_table"/>
+        <output port="biom_output"     object="biom_output"/>
+    </action>
+
+
+
+
+	<action name="end">
+        <input port="ms2_mgf_file"           object="ms2_mgf_file"/>
+        <input port="ms1_ms2_mgf_file"           object="ms1_ms2_mgf_file"/>
+        <input port="ms2_features_table"           object="ms2_features_table"/>
+        <input port="all_features_table"           object="all_features_table"/>
+
+        <input port="networking_pairs_results_file_filtered" object="networking_pairs_results_file_filtered"/>
+        <input port="librarysearch_results_file_DB" object="librarysearch_results_file_DB"/>
+        <input port="clusterinfo_summary" object="clusterinfo_summary"/>
+        <input port="clusterinfo_summary_enriched" object="clusterinfo_summary_enriched"/>
+        <input port="components_table" object="components_table"/>
+        <input port="gnps_molecular_network_graphml" object="gnps_molecular_network_graphml"/>
+		<input port="biom_output" object="biom_output"/>
+	</action>
+</flow>

@@ -1,0 +1,331 @@
+<toolset>
+
+    <pathSet base="metabolomicssnets-mzmine/scripts">
+        <toolPath tool="build_batch" path="build_batch.py"/>
+        <toolPath tool="exec_batch" path="run_mzmine.py"/>
+        <toolPath tool="parse_results" path="parse_results.py"/>
+        <pathVar name="mzmine_script_path" path="startMZmine_Linux.sh"/>
+
+        <toolPath tool="copy_out_ms1_ms2_mgf" path="copy_file.py"/>
+        <toolPath tool="copy_out_ms2_mgf" path="copy_file.py"/>
+        <toolPath tool="copy_out_feature_table" path="copy_file.py"/>
+        <toolPath tool="copy_out_all_feature_table" path="copy_file.py"/>
+    </pathSet>
+
+    <tool name="build_batch">
+        <require name="flowParams" type="file"/>
+        <require name="inputParams" type="folder"/>
+        <produce name="batch" type="file"/>
+
+        <execution env="python" argConvention="adhoc">
+            <arg valueRef="flowParams"/>
+            <arg valueRef="inputParams"/>
+            <arg valueRef="batch"/>
+        </execution>
+    </tool>
+
+    <tool name="exec_batch">
+        <require name="inputParams" type="folder"/>
+        <require name="batch" type="file"/>
+        <produce name="output" type="folder"/>
+
+        <execution env="python" argConvention="adhoc">
+            <arg valueRef="inputParams"/>
+            <arg valueRef="batch"/>
+            <arg valueRef="output"/>
+            <arg pathRef="mzmine_script_path"/>
+        </execution>
+    </tool>
+
+    <tool name="parse_results">
+        <require name="output" type="folder"/>
+        <require name="flowParams" type="file"/>
+        <produce name="results" type="folder"/>
+
+        <execution env="python" argConvention="adhoc">
+            <arg valueRef="output"/>
+            <arg valueRef="flowParams"/>
+            <arg valueRef="results"/>
+        </execution>
+    </tool>
+
+    <tool name="copy_out_ms1_ms2_mgf">
+        <require name="results" type="folder"/>
+        <produce name="ms1_ms2_mgf_file" type="file" naming="fixed"  value="specs_ms1_ms2.mgf"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <arg value="results/spectral_data_MS1_MS2.mgf"/>
+            <arg valueRef="ms1_ms2_mgf_file"/>
+        </execution>
+    </tool>
+
+    <tool name="copy_out_ms2_mgf">
+        <require name="results" type="folder"/>
+        <produce name="ms2_mgf_file" type="file" naming="fixed"  value="specs_ms.mgf"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <arg value="results/spectral_data_MS2.mgf"/>
+            <arg valueRef="ms2_mgf_file"/>
+        </execution>
+    </tool>
+
+    <tool name="copy_out_feature_table">
+        <require name="results" type="folder"/>
+        <produce name="all_features_table" type="file" naming="explicit"  extension="tsv"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <!-- <arg value="results/feature_table_MS2.csv"/> -->
+            <arg value="results/feature_table_MS2.csv"/>
+            <arg valueRef="all_features_table"/>
+        </execution>
+    </tool>
+
+    <tool name="copy_out_all_feature_table">
+        <require name="results" type="folder"/>
+        <produce name="all_features_table" type="file" naming="explicit"  extension="tsv"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <!-- <arg value="results/feature_table_MS2.csv"/> -->
+            <arg value="results/feature_table_all.csv"/>
+            <arg valueRef="all_features_table"/>
+        </execution>
+    </tool>
+
+
+
+    <!-- Molecular Networking -->
+    <pathSet base="anaconda3/bin">
+        <toolPath tool="prep_molecular_networking_parameters" path="python3.5"/>
+        <toolPath tool="merge_tsv_efficient" path="python3.5"/>
+        <toolPath tool="filter_networking_edges" path="python3.5"/>
+    </pathSet>
+
+    <pathSet base="metabolomicssnets-mzmine/scripts">
+        <pathVar name="prep_molecular_networking_parameters.script" path="prep_molecular_networking_parameters.py"/>
+        <pathVar name="merge_tsv_efficient.script" path="merge_tsv_files_efficient.py"/>
+        <pathVar name="filter_networking_edges.script" path="filter_networking_edges.py"/>
+    </pathSet>
+
+    <pathSet base="metabolomicssnets-mzmine/binaries">
+        <toolPath tool="molecular_networking_parallel_step" path="main_execmodule"/>
+    </pathSet>
+
+    <tool name="prep_molecular_networking_parameters">
+        <require name="mgf_file" type="file"/>
+        <require name="workflowParameters" type="file"/>
+        <produce name="networking_parameters" type="folder"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <arg pathRef="prep_molecular_networking_parameters.script"/>
+            <arg valueRef="mgf_file"/>
+            <arg valueRef="workflowParameters"/>
+            <arg valueRef="networking_parameters"/>
+            <arg option="-parallelism" value="1"/>
+        </execution>
+    </tool>
+
+    <tool name="molecular_networking_parallel_step">
+        <require name="networking_parameters" type="file"/>
+        <require name="mgf_file" type="file"/>
+        <require name="workflowParameters" type="file"/>
+        <produce name="networking_pairs_results_folder" type="file" naming="explicit" extension="aligns"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <arg value="ExecMolecularParallelPairs"/>
+            <arg valueRef="networking_parameters"/>
+            <arg option="ccms_output_aligns" valueRef="networking_pairs_results_folder"/>
+            <arg option="ccms_INPUT_SPECTRA_MS2" valueRef="mgf_file"/>
+        </execution>
+    </tool>
+
+    <tool name="merge_tsv_efficient">
+        <require name="tsv_folder" type="folder"/>
+        <produce name="tsv_file" type="file" naming="explicit" extension="tsv"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <arg pathRef="merge_tsv_efficient.script"/>
+            <arg valueRef="tsv_folder"/>
+            <arg valueRef="tsv_file"/>
+        </execution>
+    </tool>
+
+    <tool name="filter_networking_edges">
+        <require name="workflowParameters" type="file"/>
+        <require name="networking_pairs_results_file" type="file"/>
+        <produce name="networking_pairs_results_file_filtered" type="file" naming="explicit" extension="tsv"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <arg pathRef="filter_networking_edges.script"/>
+            <arg valueRef="workflowParameters"/>
+            <arg valueRef="networking_pairs_results_file"/>
+            <arg valueRef="networking_pairs_results_file_filtered"/>
+        </execution>
+    </tool>
+
+
+    <!-- Library Search -->
+    <pathSet base="anaconda3/bin">
+        <toolPath tool="prep_molecular_librarysearch_parameters" path="python3.5"/>
+        <toolPath tool="molecular_librarysearch_get_dbannotations" path="python3.5"/>
+    </pathSet>
+
+    <pathSet base="metabolomicssnets-mzmine/scripts">
+        <pathVar name="prep_molecular_librarysearch_parameters.script" path="prep_molecular_librarysearch_parameters.py"/>
+        <pathVar name="molecular_librarysearch_get_dbannotations.script" path="getGNPS_library_annotations.py"/>
+    </pathSet>
+
+    <pathSet base="metabolomicssnets-mzmine/binaries">
+        <toolPath tool="molecular_librarysearch_parallel_step" path="main_execmodule"/>
+    </pathSet>
+
+    <tool name="prep_molecular_librarysearch_parameters">
+        <require name="workflowParameters" type="file"/>
+        <require name="library" type="folder"/>
+        <produce name="librarysearch_parameters" type="folder"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <arg pathRef="prep_molecular_librarysearch_parameters.script"/>
+            <arg valueRef="library"/>
+            <arg valueRef="workflowParameters"/>
+            <arg valueRef="librarysearch_parameters"/>
+            <arg option="-parallelism" value="1"/>
+        </execution>
+    </tool>
+
+    <tool name="molecular_librarysearch_parallel_step">
+        <require name="librarysearch_parameters" type="file"/>
+        <require name="mgf_file" type="file"/>
+        <require name="library" type="folder"/>
+        <require name="workflowParameters" type="file"/>
+        <produce name="librarysearch_results_folder" type="file" naming="explicit" extension="tsv"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <arg value="ExecSpectralLibrarySearchMolecular"/>
+            <arg valueRef="librarysearch_parameters"/>
+            <arg option="ccms_results_dir" valueRef="librarysearch_results_folder"/>
+            <arg option="ccms_searchspectra_name" valueRef="mgf_file"/>
+        </execution>
+    </tool>
+
+    <tool name="molecular_librarysearch_get_dbannotations">
+        <require name="librarysearch_results_file" type="file"/>
+        <produce name="librarysearch_results_file_DB" type="file" naming="explicit" extension="tsv"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <arg pathRef="molecular_librarysearch_get_dbannotations.script"/>
+            <arg valueRef="librarysearch_results_file"/>
+            <arg valueRef="librarysearch_results_file_DB"/>
+        </execution>
+    </tool>
+
+    <!-- Cluster Info -->
+    <pathSet base="anaconda3/bin">
+        <toolPath tool="enrich_metadata_table" path="python3.5"/>
+        <toolPath tool="clusterinfosummary_creation" path="python3.5"/>
+        <toolPath tool="enrich_clusterinfo_summary" path="python3.5"/>
+    </pathSet>
+
+    <pathSet base="metabolomicssnets-mzmine/scripts">
+        <pathVar name="enrich_metadata_table.script" path="enrich_metadata_from_parameters.py"/>
+        <pathVar name="clusterinfosummary_creation.script" path="clusterinfosummary_for_featurenetworks.py"/>
+        <pathVar name="enrich_clusterinfo_summary.script" path="enrich_clusterinfosummary.py"/>
+    </pathSet>
+
+    <tool name="enrich_metadata_table">
+        <require name="workflowParameters" type="file"/>
+        <require name="metadata_table" type="folder"/>
+        <produce name="enriched_metadata_table" type="file" naming="explicit" extension="tsv"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <arg pathRef="enrich_metadata_table.script"/>
+            <arg valueRef="workflowParameters"/>
+            <arg valueRef="metadata_table"/>
+            <arg valueRef="enriched_metadata_table"/>
+        </execution>
+    </tool>
+
+    <tool name="clusterinfosummary_creation">
+        <require name="quantification_table" type="file"/>
+        <require name="metadata_table" type="file"/>
+        <produce name="clusterinfo_summary" type="file" naming="explicit" extension="tsv"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <arg pathRef="clusterinfosummary_creation.script"/>
+            <arg valueRef="quantification_table"/>
+            <arg valueRef="clusterinfo_summary"/>
+            <arg option="metadata_file" valueRef="metadata_table"/>
+        </execution>
+    </tool>
+
+    <tool name="enrich_clusterinfo_summary">
+        <require name="clusterinfo_summary" type="file"/>
+        <require name="librarysearch_results_file_DB" type="file"/>
+        <require name="networking_pairs_results_file_filtered" type="file"/>
+        <produce name="clusterinfo_summary_enriched" type="file" naming="explicit" extension="tsv"/>
+        <produce name="components_table" type="file" naming="explicit" extension="tsv"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <arg pathRef="enrich_clusterinfo_summary.script"/>
+            <arg valueRef="clusterinfo_summary"/>
+            <arg valueRef="networking_pairs_results_file_filtered"/>
+            <arg valueRef="librarysearch_results_file_DB"/>
+            <arg valueRef="clusterinfo_summary_enriched"/>
+            <arg valueRef="components_table"/>
+        </execution>
+    </tool>
+
+    <!-- Network to GraphML Output -->
+    <pathSet base="anaconda3/bin">
+        <toolPath tool="metabolomics_convert_graphml" path="python3.5"/>
+    </pathSet>
+
+    <pathSet base="metabolomicssnets-mzmine/scripts">
+        <pathVar name="metabolomics_convert_graphml.script" path="convert_networks_to_graphml.py"/>
+    </pathSet>
+
+    <tool name="metabolomics_convert_graphml">
+        <require name="networking_pairs_results_file_filtered" type="file"/>
+        <require name="clusterinfo_summary_enriched" type="file"/>
+        <require name="librarysearch_results_file_DB" type="file"/>
+        <produce name="gnps_molecular_network_graphml" type="file" naming="explicit" extension="graphml"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <arg pathRef="metabolomics_convert_graphml.script"/>
+            <arg valueRef="networking_pairs_results_file_filtered"/>
+            <arg valueRef="clusterinfo_summary_enriched"/>
+            <arg valueRef="librarysearch_results_file_DB"/>
+            <arg valueRef="gnps_molecular_network_graphml"/>
+        </execution>
+    </tool>
+
+
+    <!-- Network to BioM -->
+    <pathSet base="anaconda3/bin">
+        <toolPath tool="metabolomics_convert_biom" path="python3.5"/>
+        <pathVar name="python_runtime.bin" path="python3.5"/>
+        <pathVar name="biom.script" path="biom"/>
+    </pathSet>
+
+    <pathSet base="metabolomicssnets-mzmine/scripts">
+        <pathVar name="metabolomics_convert_biom.script" path="convert_csv_to_biom.py"/>
+    </pathSet>
+
+    <tool name="metabolomics_convert_biom">
+        <require name="all_features_table" type="file"/>
+        <produce name="biom_output" type="file" naming="explicit" extension="biom"/>
+
+        <execution env="binary" argConvention="adhoc">
+            <arg pathRef="metabolomics_convert_biom.script"/>
+            <arg valueRef="all_features_table"/>
+            <arg valueRef="biom_output"/>
+            <arg pathRef="python_runtime.bin"/>
+            <arg pathRef="biom.script"/>
+        </execution>
+    </tool>
+
+
+
+
+
+
+</toolset>

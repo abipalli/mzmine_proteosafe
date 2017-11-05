@@ -1,0 +1,1457 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<interface id="mzmine" version="1.1.0">
+    <workflow-id>MZMINE</workflow-id>
+    <workflow-label>MZmine Workflow</workflow-label>
+
+    <!-- Parameter declarations -->
+    <parameters>
+        <!-- Universal parameters -->
+        <parameter name="desc" label="Description">
+            <validator type="length" maximum="100"/>
+        </parameter>
+        <parameter name="email" label="Email">
+            <validator type="email"/>
+        </parameter>
+
+        <!-- Raw Data Inputs -->
+        <parameter name="spec_on_server" label="Spectrum Files (Required) Group 1">
+            <validator type="required"/>
+            <fileGenerator type="upload" purpose="parameters" target="specone"/>
+        </parameter>
+
+        <parameter name="spec_on_server_group2" label="Spectrum Files G2">
+            <fileGenerator type="upload" purpose="parameters" target="spectwo"/>
+        </parameter>
+
+        <parameter name="spec_on_server_group3" label="Spectrum Files G3">
+            <fileGenerator type="upload" purpose="parameters" target="specthree"/>
+        </parameter>
+
+        <parameter name="spec_on_server_group4" label="Spectrum Files G4">
+            <fileGenerator type="upload" purpose="parameters" target="specfour"/>
+        </parameter>
+
+        <parameter name="spec_on_server_group5" label="Spectrum Files G5">
+            <fileGenerator type="upload" purpose="parameters" target="specfive"/>
+        </parameter>
+
+        <parameter name="spec_on_server_group6" label="Spectrum Files G6">
+            <fileGenerator type="upload" purpose="parameters" target="specsix"/>
+        </parameter>
+
+        <!-- Mass Detection MS1 -->
+        <parameter name="massdetect_ms1.run" label="Run Mass Detection for MS1">
+            <default value="on"/>
+        </parameter>
+        <parameter name="massdetect_ms1.noiselevel" label="Noise Level for Centroid Mass Detection">
+            <default value="2000.0"/>
+        </parameter>
+
+        <!-- Mass Detection MS2 -->
+        <parameter name="massdetect_ms2.run" label="Run Mass Detection for MS2">
+            <default value="on"/>
+        </parameter>
+        <parameter name="massdetect_ms2.noiselevel" label="Noise Level for Centroid Mass Detection">
+            <default value="50.0"/>
+        </parameter>
+
+        <!-- Chromatogram Builder -->
+        <parameter name="chromobuilder.run" label="Run Chromatogram Builder">
+            <default value="on"/>
+        </parameter>
+        <parameter name="chromobuilder.min_time" label="Min Time Span (min)">
+            <default value="0.035"/>
+        </parameter>
+        <parameter name="chromobuilder.min_height" label="Min Height">
+            <default value="7000.0"/>
+        </parameter>
+        <parameter name="chromobuilder.abstolerance" label="Absolute Tolerance">
+            <default value="0.005"/>
+        </parameter>
+        <parameter name="chromobuilder.ppmtolerance" label="PPM Tolerance">
+            <default value="10.0"/>
+        </parameter>
+
+        <!-- Deconvolution -->
+        <parameter name="deconv.run" label="Run Deconvolution Module">
+            <default value="on"/>
+        </parameter>
+        <parameter name="deconv.algorithm" label="Algorithm">
+            <options>
+                <option value="Local minimum search"/>
+                <option value="Baseline cut-off"/>
+            </options>
+        </parameter>
+        <parameter name="deconv.baseline.min_peakheight" label="Min Peak Height">
+            <default value="5000.0"/>
+        </parameter>
+        <parameter name="deconv.peak_min" label="Peak Duration Range Min">
+            <default value="0.0"/>
+        </parameter>
+        <parameter name="deconv.peak_max" label="Peak Durantion Range Max">
+            <default value="0.7"/>
+        </parameter>
+        <parameter name="deconv.baseline.level" label="Baseline Level">
+            <default value="500.0"/>
+        </parameter>
+        <parameter name="deconv.localmin.threshold" label="Chromatogram Threshold">
+            <default value="0.65"/>
+        </parameter>
+        <parameter name="deconv.localmin.range" label="Search Minimum in RT Range (min)">
+            <default value="0.01"/>
+        </parameter>
+        <parameter name="deconv.localmin.relheight" label="Minimum Relative Height">
+            <default value="0.05"/>
+        </parameter>
+        <parameter name="deconv.localmin.absheight" label="Minimum Absolute Height">
+            <default value="1000.0"/>
+        </parameter>
+        <parameter name="deconv.localmin.ratio" label="Min Ratio of Peak Top/Edge">
+            <default value="2.0"/>
+        </parameter>
+        <parameter name="deconv.ms2_mzrange.run" label="Use m/z Range for MS2 Scan Pairing (Da)">
+            <default value="off"/>
+        </parameter>
+        <parameter name="deconv.ms2_mzrange">
+            <default value="0.03"/>
+        </parameter>
+        <parameter name="deconv.ms2_rtrange.run" label="Use RT Range for MS2 Scan Pairing (min)">
+            <default value="off"/>
+        </parameter>
+        <parameter name="deconv.ms2_rtrange">
+            <default value="0.15"/>
+        </parameter>
+
+        <!-- Isotope Grouper Module -->
+        <parameter name="peakgroup.run" label="Run Peak Grouping Module">
+            <default value="on"/>
+        </parameter>
+        <parameter name="peakgroup.isopattern_only" label="Remove Features without Isotopic Pattern">
+            <default value="off"/>
+        </parameter>
+        <parameter name="peakgroup.min_interval" label="Minimal Intensity for Interval Selection">
+            <default value="10"/>
+        </parameter>
+        <parameter name="peakgroup.min_overlap" label="Minimal Intensity Overlap">
+            <default value="80"/>
+        </parameter>
+        <parameter name="peakgroup.min_corr" label="Minimal Correlation">
+            <default value="70"/>
+        </parameter>
+
+        <!-- Join Aligner Module -->
+        <parameter name="join.run" label="Run Join Aligner Module">
+            <default value="on"/>
+        </parameter>
+        <parameter name="join.mz_abstolerance">
+            <default value="0.001"/>
+        </parameter>
+        <parameter name="join.mz_ppmtolerance">
+            <default value="15"/>
+        </parameter>
+        <parameter name="join.mzweight" label="Weight for m/z">
+            <default value="75"/>
+        </parameter>
+        <parameter name="join.rettolerance" label="Retention Time Tolerance">
+            <default value="0.3"/>
+        </parameter>
+        <parameter name="join.rettolerance_type">
+            <options>
+                <option value="absolute"/>
+                <option value="relative"/>
+            </options>
+        </parameter>
+        <parameter name="join.rtweight" label="Weight for RT">
+            <default value="25"/>
+        </parameter>
+
+        <!-- Peak Finder Module -->
+        <parameter name="peakfinder.run" label="Run Peak Finder Module">
+            <default value="on"/>
+        </parameter>
+        <parameter name="peakfinder.intensitytolerance" label="Intensity Tolerance">
+            <default value="5"/>
+        </parameter>
+        <parameter name="peakfinder.mz_abstolerance">
+            <default value="0.01"/>
+        </parameter>
+        <parameter name="peakfinder.mz_ppmtolerance">
+            <default value="10.0"/>
+        </parameter>
+        <parameter name="peakfinder.rettolerance" label="Retetion Time Tolerance">
+            <default value="0.3"/>
+        </parameter>
+        <parameter name="peakfinder.rettolerance_type">
+            <options>
+                <option value="absolute"/>
+                <option value="relative"/>
+            </options>
+        </parameter>
+
+        <!-- Rows Filter Module -->
+        <parameter name="rowsfilter.run" label="Run Rows Filter Module">
+            <default value="on"/>
+        </parameter>
+        <parameter name="rowsfilter.minpeaks_run" label="Define Minimum Peaks In a Row">
+            <default value="off"/>
+        </parameter>
+        <parameter name="rowsfilter.minpeaks" label="Minimum Peaks In a Row">
+            <default value="1"/>
+        </parameter>
+        <parameter name="rowsfilter.minpeaksisopatt_run" label="Define Minimum Peaks In an Isotope Pattern">
+            <default value="off"/>
+        </parameter>
+        <parameter name="rowsfilter.minpeaksisopatt">
+            <default value="2"/>
+        </parameter>
+        <parameter name="rowsfilter.rettime_run" label="Define Retention Time">
+            <default value="off"/>
+        </parameter>
+        <parameter name="rowsfilter.rettime_min"></parameter>
+        <parameter name="rowsfilter.rettime_max"></parameter>
+        <parameter name="rowsfilter.durtime_run" label="Define Peak Duration Time">
+            <default value="off"/>
+        </parameter>
+        <parameter name="rowsfilter.durtime_min"/>
+        <parameter name="rowsfilter.durtime_max"/>
+        <parameter name="rowsfilter.resetpeaknum" label="Reset the Peak Number ID">
+            <default value="on"/>
+        </parameter>
+
+        <!-- Molecular Networking -->
+        <parameter name="metadata_table" label="metadata_table">
+            <validator type="required"/>
+            <fileGenerator type="upload" purpose="metadata_table" target="metadata_table"/>
+        </parameter>
+
+        <parameter name="tolerance.PM_tolerance" label="Precursor Ion Mass Tolerance">
+            <default value="2.0"/>
+            <validator type="float" minimum="0" maximum="2.5"/>
+        </parameter>
+        <parameter name="tolerance.Ion_tolerance" label="Fragment Ion Mass Tolerance">
+            <default value="0.5"/>
+            <validator type="float" minimumExclusive="0" maximumExclusive="1"/>
+        </parameter>
+
+        <!-- Networking Parameters -->
+        <parameter name="PAIRS_MIN_COSINE" label="Min Pairs Cos">
+            <default value="0.7"/>
+            <validator type="float" minimumExclusive="0" maximum="1"/>
+        </parameter>
+
+        <parameter name="MIN_MATCHED_PEAKS" label="Minimum Matched Fragment Ions">
+            <default value="6"/>
+            <validator type="integer" minimumExclusive="0" maximum="500"/>
+        </parameter>
+
+        <parameter name="MAX_SHIFT" label="Maximum shift between precursors">
+            <default value="500"/>
+            <validator type="integer" minimumExclusive="0" maximum="1500"/>
+        </parameter>
+
+        <parameter name="TOPK" label="Network TopK">
+            <default value="10"/>
+        </parameter>
+
+        <parameter name="MAXIMUM_COMPONENT_SIZE" label="Maximum Connected Component Size (Beta)">
+            <default value="100"/>
+            <validator type="integer" minimumExclusive="-1" maximum="100000"/>
+        </parameter>
+
+        <!-- Library Search Parameters -->
+        <parameter name="library_on_server" label="Spectral Library">
+            <fileGenerator type="upload" purpose="library" target="lib"/>
+            <default value="d.speclibs;"/>
+        </parameter>
+
+        <parameter name="SCORE_THRESHOLD" label="Score Threshold">
+            <default value="0.7"/>
+            <validator type="float" minimumExclusive="0" maximum="1"/>
+        </parameter>
+
+        <parameter name="MIN_MATCHED_PEAKS_SEARCH" label="Library Search Min Matched Peaks">
+            <default value="6"/>
+            <validator type="integer" minimumExclusive="0" maximum="500"/>
+        </parameter>
+
+        <parameter name="TOP_K_RESULTS" label="Top results to report per query">
+            <default value="1"/>
+            <validator type="integer" minimumExclusive="0" maximum="500"/>
+        </parameter>
+
+        <parameter name="ANALOG_SEARCH" label="Search Analogs">
+            <options>
+                <option value="0" label="Don't Search"/>
+                <option value="1" label="Do Search"/>
+            </options>
+            <validator type="set"/>
+        </parameter>
+
+        <parameter name="MAX_SHIFT_MASS" label="Maximum Analog Search Mass Difference">
+            <default value="100.0"/>
+        </parameter>
+
+        <!-- Filtering Options -->
+        <parameter name="MIN_PEAK_INT" label="Minimum Peak Intensity">
+            <default value="0.0"/>
+        </parameter>
+
+        <parameter name="FILTER_PRECURSOR_WINDOW" label="Filter Precursor Window">
+            <options>
+                <option value="1" label="Filter"/>
+                <option value="0" label="Don't Filter"/>
+            </options>
+            <validator type="set"/>
+            <default value="1"/>
+        </parameter>
+
+        <parameter name="FILTER_LIBRARY" label="Filter Library">
+            <options>
+                <option value="0" label="Don't Filter Library"/>
+                <option value="1" label="Filter Library"/>
+            </options>
+            <validator type="set"/>
+            <default value="1"/>
+        </parameter>
+
+        <parameter name="WINDOW_FILTER" label="Filter peaks in 50Da Window">
+            <options>
+                <option value="0" label="Don't Filter"/>
+                <option value="1" label="Filter"/>
+            </options>
+            <validator type="set"/>
+            <default value="1"/>
+        </parameter>
+
+    </parameters>
+
+    <!-- Input form layout -->
+    <block label="Parameter Presets">
+        <row>
+            <cell>
+                <label prefix="false">
+                    <content>
+                    <![CDATA[
+                        <span style="background-color:#D1EEEE; padding:1px; border:2px inset black;">
+                            <a style="color:black; font-weight:bold; font-size:105%; background-color:#D1EEEE" target="_blank" href='/ProteoSAFe/index.jsp?params=%7B%22isogroup.rettolerance%22%3A+%220.15%22%2C+%22isogroup.repiso%22%3A+%22Most+intense%22%2C+%22deconv.ms2_mzrange.run%22%3A+%22on%22%2C+%22isogroup.mz_abstolerance%22%3A+%220.001%22%2C+%22massdetect_ms2.noiselevel%22%3A+%2250%22%2C+%22join.rettolerance%22%3A+%220.35%22%2C+%22deconv.run%22%3A+%22on%22%2C+%22deconv.peak_min%22%3A+%220.01%22%2C+%22deconv.localmin.relheight%22%3A+%220.05%22%2C+%22deconv.localmin.absheight%22%3A+%221000.0%22%2C+%22chromobuilder.run%22%3A+%22on%22%2C+%22tolerance.Ion_tolerance%22%3A+%220.02%22%2C+%22deconv.peak_max%22%3A+%221%22%2C+%22peakfinder.mz_ppmtolerance%22%3A+%2210%22%2C+%22join.rtweight%22%3A+%2225%22%2C+%22rowsfilter.resetpeaknum%22%3A+%22on%22%2C+%22join.mzweight%22%3A+%2275%22%2C+%22isogroup.run%22%3A+%22on%22%2C+%22workflow%22%3A+%22MZMINE%22%2C+%22deconv.ms2_rtrange.run%22%3A+%22on%22%2C+%22isogroup.mz_ppmtolerance%22%3A+%2210%22%2C+%22deconv.ms2_rtrange%22%3A+%220.15%22%2C+%22chromobuilder.min_time%22%3A+%220.01%22%2C+%22massdetect_ms1.run%22%3A+%22on%22%2C+%22rowsfilter.minpeaksisopatt%22%3A+%222%22%2C+%22tolerance.PM_tolerance%22%3A+%220.02%22%2C+%22deconv.localmin.ratio%22%3A+%222.0%22%2C+%22chromobuilder.ppmtolerance%22%3A+%2220%22%2C+%22deconv.algorithm%22%3A+%22Baseline+cut-off%22%2C+%22chromobuilder.min_height%22%3A+%225000%22%2C+%22join.mz_ppmtolerance%22%3A+%2215%22%2C+%22deconv.baseline.level%22%3A+%221000%22%2C+%22chromobuilder.abstolerance%22%3A+%220.0005%22%2C+%22join.run%22%3A+%22on%22%2C+%22deconv.baseline.min_peakheight%22%3A+%223000.0%22%2C+%22join.mz_abstolerance%22%3A+%220.001%22%2C+%22peakfinder.mz_abstolerance%22%3A+%220.001%22%2C+%22peakfinder.run%22%3A+%22on%22%2C+%22deconv.ms2_mzrange%22%3A+%220.03%22%2C+%22deconv.localmin.threshold%22%3A+%220.65%22%2C+%22massdetect_ms2.run%22%3A+%22on%22%2C+%22peakfinder.intensitytolerance%22%3A+%225%22%2C+%22isogroup.rettolerance_type%22%3A+%22absolute%22%2C+%22peakfinder.rettolerance%22%3A+%220.2%22%2C+%22deconv.localmin.range%22%3A+%220.01%22%2C+%22massdetect_ms1.noiselevel%22%3A+%222000%22%2C+%22join.rettolerance_type%22%3A+%22absolute%22%2C+%22peakfinder.rettolerance_type%22%3A+%22absolute%22%2C+%22rowsfilter.run%22%3A+%22on%22%2C+%22rowsfilter.minpeaks%22%3A+%221%22%2C+%22isogroup.maxcharge%22%3A+%223%22%7D'>
+                                QTOF Small Dataset
+                            </a>
+                        </span>
+                    ]]>
+                    </content>
+                </label>
+            </cell>
+            <cell>
+                <label prefix="false">
+                    <content>
+                    <![CDATA[
+                        <span style="background-color:#D1EEEE; padding:1px; border:2px inset black;">
+                            <a style="color:black; font-weight:bold; font-size:105%; background-color:#D1EEEE" target="_blank" href='/ProteoSAFe/index.jsp?params=%7B%22massdetect_ms1.run%22%3A+%22on%22%2C+%22peakgroup.min_corr%22%3A+%2270%22%2C+%22deconv.ms2_mzrange.run%22%3A+%22on%22%2C+%22tolerance.PM_tolerance%22%3A+%220.05%22%2C+%22massdetect_ms2.noiselevel%22%3A+%2250%22%2C+%22deconv.run%22%3A+%22on%22%2C+%22deconv.peak_min%22%3A+%220.01%22%2C+%22deconv.localmin.relheight%22%3A+%220.05%22%2C+%22deconv.localmin.absheight%22%3A+%221000.0%22%2C+%22chromobuilder.run%22%3A+%22on%22%2C+%22tolerance.Ion_tolerance%22%3A+%220.05%22%2C+%22deconv.peak_max%22%3A+%222%22%2C+%22peakfinder.mz_ppmtolerance%22%3A+%2210%22%2C+%22join.rtweight%22%3A+%2225%22%2C+%22rowsfilter.resetpeaknum%22%3A+%22on%22%2C+%22join.mzweight%22%3A+%2275%22%2C+%22peakgroup.min_interval%22%3A+%2210%22%2C+%22workflow%22%3A+%22MZMINE%22%2C+%22deconv.ms2_rtrange.run%22%3A+%22on%22%2C+%22peakfinder.rettolerance%22%3A+%221.0%22%2C+%22rowsfilter.minpeaks_run%22%3A+%22on%22%2C+%22deconv.ms2_rtrange%22%3A+%220.15%22%2C+%22chromobuilder.min_time%22%3A+%220.01%22%2C+%22peakfinder.run%22%3A+%22on%22%2C+%22deconv.localmin.ratio%22%3A+%222.0%22%2C+%22peakgroup.min_overlap%22%3A+%2280%22%2C+%22chromobuilder.ppmtolerance%22%3A+%2225%22%2C+%22deconv.algorithm%22%3A+%22Baseline+cut-off%22%2C+%22chromobuilder.min_height%22%3A+%2220000%22%2C+%22join.mz_ppmtolerance%22%3A+%2215%22%2C+%22deconv.baseline.level%22%3A+%221000%22%2C+%22chromobuilder.abstolerance%22%3A+%220.0005%22%2C+%22join.run%22%3A+%22on%22%2C+%22deconv.baseline.min_peakheight%22%3A+%2210000.0%22%2C+%22join.mz_abstolerance%22%3A+%220.001%22%2C+%22peakfinder.mz_abstolerance%22%3A+%220.001%22%2C+%22rowsfilter.run%22%3A+%22on%22%2C+%22peakgroup.run%22%3A+%22on%22%2C+%22deconv.ms2_mzrange%22%3A+%220.03%22%2C+%22deconv.localmin.threshold%22%3A+%220.65%22%2C+%22massdetect_ms2.run%22%3A+%22on%22%2C+%22peakfinder.intensitytolerance%22%3A+%225%22%2C+%22join.rettolerance%22%3A+%220.35%22%2C+%22deconv.localmin.range%22%3A+%220.01%22%2C+%22massdetect_ms1.noiselevel%22%3A+%225000%22%2C+%22join.rettolerance_type%22%3A+%22absolute%22%2C+%22peakfinder.rettolerance_type%22%3A+%22absolute%22%2C+%22rowsfilter.minpeaks%22%3A+%222%22%7D'>
+                                QTOF Large Dataset
+                            </a>
+                        </span>
+                    ]]>
+                    </content>
+                </label>
+
+            </cell>
+        </row>
+    </block>
+    
+    <block label="Import Data Files">
+        <row>
+            <cell>
+                <label>
+                    <content parameter="spec_on_server"/>
+                    <tooltip id="spectrum_gnps"/>
+                </label>
+            </cell>
+            <cell colspan="3">
+                <module id="spec_on_server" type="fileSelector">
+                    <property name="label">Spectrum Files G1</property>
+                </module>
+            </cell>
+            <cell colspan="4" align="right">
+                <label prefix="false">
+                    <content>
+                        <![CDATA[<span style="background-color:#D1EEEE;
+            padding:1px; border:2px inset blue">See
+            <a style="color:blue; font-weight:bold; font-size:105%;
+              background-color:#D1EEEE" target="_blank"
+              href="https://bix-lab.ucsd.edu/display/Public/Molecular+Networking+Documentation">
+              here
+            </a> for further documentation about molecular networking.</span>]]>
+                    </content>
+                </label>
+            </cell>
+        </row>
+
+        <row>
+            <cell>
+                <label>
+                    <content parameter="spec_on_server_group2"/>
+                    <tooltip id="spectrum_gnps"/>
+                </label>
+            </cell>
+            <cell colspan="3">
+                <module id="spec_on_server_group2" type="fileSelector">
+                    <property name="label">Spectrum Files G2</property>
+                </module>
+            </cell>
+
+            <cell colspan="4" align="right">
+                <label prefix="false">
+                    <content>
+                        <![CDATA[<span style="background-color:#D1EEEE;
+            padding:1px; border:2px inset blue">Click Here
+            <a style="color:blue; font-weight:bold; font-size:105%;
+              background-color:#D1EEEE" target="_blank"
+              href="http://gnps.ucsd.edu/ProteoSAFe/index.jsp?task=c95481f0c53d42e78a61bf899e9f9adb">
+              here
+            </a> to run a demo molecular network.</span>]]>
+                    </content>
+                </label>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="spec_on_server_group3"/>
+                    <tooltip id="spectrum_gnps"/>
+                </label>
+            </cell>
+            <cell colspan="3">
+                <module id="spec_on_server_group3" type="fileSelector">
+                    <property name="label">Spectrum Files G3</property>
+                </module>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="spec_on_server_group4"/>
+                    <tooltip id="spectrum_gnps"/>
+                </label>
+            </cell>
+            <cell colspan="3">
+                <module id="spec_on_server_group4" type="fileSelector">
+                    <property name="label">Spectrum Files G4</property>
+                </module>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="spec_on_server_group5"/>
+                    <tooltip id="spectrum_gnps"/>
+                </label>
+            </cell>
+            <cell colspan="3">
+                <module id="spec_on_server_group5" type="fileSelector">
+                    <property name="label">Spectrum Files G5</property>
+                </module>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="spec_on_server_group6"/>
+                    <tooltip id="spectrum_gnps"/>
+                </label>
+            </cell>
+            <cell colspan="3">
+                <module id="spec_on_server_group6" type="fileSelector">
+                    <property name="label">Spectrum Files G6</property>
+                </module>
+            </cell>
+        </row>
+
+        <row>
+            <cell>
+                <label>
+                    <content parameter="metadata_table"/>
+                </label>
+            </cell>
+            <cell>
+                <module id="metadata_table" type="fileSelector">
+                    <property name="label">metadata_table</property>
+                </module>
+            </cell>
+        </row>
+    </block>
+
+    <block label="Basic Options">
+        <row>
+            <cell>
+                <label>
+                    <content parameter="tolerance.PM_tolerance"/>
+                    <tooltip id="precursor_mass_tolerance">
+                        Parameter used for MS-Cluster and spectral library search. Specify the precursor ions mass tolerance, in Daltons. This value influences the aforementioned clustering of nearly-identical MS/MS spectra via MS-Cluster. Note that the value of this
+                        parameters should be consistent with the capabilities of the mass spectrometer and the specific instrument method used to generated the MS/MS data. The default value is ± 0.02 Da for high resolution mass spectrometers (e.g. q-TOFs, q-Orbitrap). The
+                        0.02 Da value translates into a maximum error of 40 ppm at m/z 500, 20 ppm at m/z 1000 for the precursor ion, and 13 ppm at m/z 1500, which is consistent for typical m/z range acquisition of small molecules. Regarding peptidic small molecules, their
+                        m/z range can be up to 2000 Da, thus a of 0.03 Da should be used. For low-resolution MS/MS instruments (e.g. , ion traps, triple-quadrupole/QqQ), a PIMT ion mass tolerance of ± 2.0 Da is recommended. See documentation for more details (Link to the
+                        documentation table). **Please note: The default parameters recommended above for high-resolution mass spectrometers will not result in proper searches of the spectral libraries generated on low-resolution mass spectrometer, such as Respect and a
+                        significant portion of NIST. Therefore, if you want to perform spectral matching with these spectral libraries, we recommend using a ± 2.0 Da PIMT regardless of the type of mass spectrometer used. Furthermore, downstream filtering of the MS/MS
+                        spectral library hits can be done based the mass spectrometers used.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="tolerance.PM_tolerance">
+                    <attribute name="size" value="3"/>
+                </input>
+                <label>
+                    <content>Da</content>
+                </label>
+            </cell>
+            <cell>
+                <label>
+                    <content parameter="tolerance.Ion_tolerance"/>
+                    <tooltip id="fragment_ion_mass_tolerance">
+                        Parameters used for MS-Cluster, molecular networking, and MS/MS spectral library searches. For every group of MS/MS spectra being considered for clustering (consensus spectrum creation), this value specifies how much fragment ions can be shifted from
+                        their expected m/z values. Default value is ± 0.02 Da for high-resolution instruments (q-TOF, q-Orbitrap) and ± 2.0 Da for low-resolution instruments (ion traps, QqQ).
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="tolerance.Ion_tolerance">
+                    <attribute name="size" value="3"/>
+                </input>
+                <label>
+                    <content>Da</content>
+                </label>
+            </cell>
+        </row>
+    </block>
+
+    <block label="Advanced Network Options">
+        <row>
+            <cell>
+                <label>
+                    <content parameter="PAIRS_MIN_COSINE"/>
+                    <tooltip id="min_pair_cosine_tooltip">
+                        Minimum cosine score that must occur between a pair of consensus MS/MS spectra in order for an edge to be formed in the molecular network. Default value is 0.7. Lower value will increase the size of the clusters by inducing the clustering of less
+                        related MS/MS spectra, higher value will limit do the opposite.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="PAIRS_MIN_COSINE">
+                    <attribute name="size" value="3"/>
+                </input>
+            </cell>
+
+            <cell>
+                <label>
+                    <content parameter="MIN_MATCHED_PEAKS"/>
+                    <tooltip id="min_matched_peaks_tooltip">
+                        Parameters used for molecular networking. Is the minimum number of common fragment ions that are shared by two separate consensus MS/MS spectra in order to be connected by an edge in the molecular network. A low value will permit linkages between
+                        spectra of molecules with few similar fragment ions, but it will result in many more less-related spectra being connected to the network. An higher value will do the opposite. Default value is 6, but note that this parameters should be adjusted
+                        depending on the experimental conditions for mass spectra acquisition (such as mode of ionisation, fragmentation conditions, and the mobile phase, ...), and the collision-induced fragmentation behavior of the molecules of interest within the samples.
+                        High molecular weight (MW) compounds, and compounds with more hetero-atoms will generally tend to produce more fragment ions. However, this rule cannot be systematized. For example, some lipids with high MW generate only few fragment ions.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="MIN_MATCHED_PEAKS">
+                    <attribute name="size" value="3"/>
+                </input>
+            </cell>
+
+            <cell>
+                <label>
+                    <content parameter="MAX_SHIFT"/>
+                    <tooltip id="MAX_SHIFT_tooltip">
+                        Maximum mass difference between two spectra
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="MAX_SHIFT">
+                    <attribute name="size" value="3"/>
+                </input>
+            </cell>
+        </row>
+
+        <row>
+            <cell>
+                <label>
+                    <content parameter="TOPK"/>
+                    <tooltip id="network_topk_gnps_tooltip">
+                        Maximum number of neighbor nodes for one single node. The edge between two nodes are kept only if both nodes are within each other's TopK most similar nodes. For example, if this value is set at 20, then a single node may be connected to up to 20
+                        other nodes. Keeping this value low makes very large networks (many nodes) much easier to visualize.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="TOPK">
+                    <attribute name="size" value="3"/>
+                </input>
+            </cell>
+            <cell>
+                <label>
+                    <content parameter="MAXIMUM_COMPONENT_SIZE"/>
+                    <tooltip id="max_component_size_gnps_tooltip">
+                        Maximum size of nodes allowed in a single connected network. Nodes within a single connected molecular network will be separated by increasing cosine threshold for that specific connected molecular network. Default value is 100. Use 0 to allow an
+                        unlimited number of nodes in a single network. Note that with large datasets, or when a great number of related molecules are in the dataset, this value should be higher (or turn to 0) to retain as much information as possible. Downstream, these
+                        larger networks can be visualized using Cytoscape layout algorithms that can increase the intra-network clustering, allowing to visualize spectral groups in the network despite the number of nodes in the network.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="MAXIMUM_COMPONENT_SIZE">
+                    <attribute name="size" value="3"/>
+                </input>
+            </cell>
+        </row>
+    </block>
+
+    <block label="Advanced Library Search Options">
+        <row>
+            <cell>
+                <label>
+                    <content parameter="library_on_server"/>
+                    <tooltip id="library_gnps"/>
+                </label>
+            </cell>
+            <cell colspan="3">
+                <module id="library_on_server" type="fileSelector">
+                    <property name="label">Library Files</property>
+                </module>
+            </cell>
+        </row>
+        <row>
+            <cell colspan="4" align="right">
+                <label prefix="false">
+                    <content>
+                        <![CDATA[<span style="background-color:#D1EEEE;
+            padding:1px; border:2px inset blue"> To import libraries for search click
+            <a style="color:blue; font-weight:bold; font-size:105%;
+              background-color:#D1EEEE" target="_blank"
+              href="https://bix-lab.ucsd.edu/display/Public/GNPS+FAQ">
+              here
+            </a></span>]]>
+                    </content>
+                </label>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="MIN_MATCHED_PEAKS_SEARCH"/>
+                    <tooltip id="min_matched_peaks_library_gnps_tooltip">
+                        Minimum number of common fragment ions that MS/MS spectra should contain in order to be considered for spectral library annotation. Default value is 6, but note that this parameters should be tuned depending of the molecule of interest, and the
+                        experimental conditions (such as the ionisation mode, and the fragmentation conditions, ...). For example, collision-induced fragmentation of some lipids produce only few fragment ions. A lower value will allow clustering of MS/MS spectra containing
+                        less fragment ions, however it will also induce clustering of MS/MS spectra from different molecular-type to be connected in one network. An higher value will do the opposite.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="MIN_MATCHED_PEAKS_SEARCH">
+                    <attribute name="size" value="3"/>
+                </input>
+            </cell>
+            <cell>
+                <label>
+                    <content parameter="SCORE_THRESHOLD"/>
+                    <tooltip id="min_cosine_library_gnps_tooltip">
+                        Minimum cosine score that MS/MS spectra should get in spectral matching with MS/MS spectral libraries in order to be considered an annotation.
+                    </tooltip>
+                </label>
+            </cell>
+
+            <cell>
+                <input type="text" parameter="SCORE_THRESHOLD">
+                    <attribute name="size" value="3"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="ANALOG_SEARCH"/>
+                    <tooltip id="analog_search_tooltip">
+                        Enable analog search. Matches query spectra against library spectrum with a modification tolerant search.
+                    </tooltip>
+                </label>
+            </cell>
+
+            <cell>
+                <input type="select" parameter="ANALOG_SEARCH"></input>
+            </cell>
+
+            <cell>
+                <label>
+                    <content parameter="MAX_SHIFT_MASS"/>
+                    <tooltip id="max_shift_mass_tooltip">
+                        The maximum delta between a query spectrum's m/z that is allowed to match a library spectrum.
+                    </tooltip>
+                </label>
+            </cell>
+
+            <cell>
+                <input type="text" parameter="MAX_SHIFT_MASS"></input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="TOP_K_RESULTS"/>
+                </label>
+            </cell>
+
+            <cell>
+                <input type="text" parameter="TOP_K_RESULTS"></input>
+            </cell>
+        </row>
+    </block>
+
+    <block label="Advanced Filtering Options">
+        <row>
+            <cell>
+                <label>
+                    <content parameter="MIN_PEAK_INT"/>
+                    <tooltip id="filterint_gnps_tooltip">
+                        All fragment ions in the MS/MS spectrum below this raw intensity will be deleted. By default, no filter.
+                    </tooltip>
+                </label>
+            </cell>
+
+            <cell>
+                <input type="text" parameter="MIN_PEAK_INT">
+                    <attribute name="size" value="3"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="FILTER_PRECURSOR_WINDOW"/>
+                    <tooltip id="filterprecursor_gnps_tooltip">
+                        All peaks in a +/- 17 Da around precursor ion mass are deleted. By default, yes filter. This removes the residual precursor ion, which is frequently observed in MS/MS spectra acquired on qTOFs. By default, yes filter.
+                    </tooltip>
+                </label>
+            </cell>
+
+            <cell>
+                <input type="select" parameter="FILTER_PRECURSOR_WINDOW"></input>
+            </cell>
+
+            <cell>
+                <label>
+                    <content parameter="FILTER_LIBRARY"/>
+                    <tooltip id="filterlibrary_gnps"/>
+                </label>
+            </cell>
+
+            <cell>
+                <input type="select" parameter="FILTER_LIBRARY"></input>
+            </cell>
+        </row>
+
+        <row>
+            <cell>
+                <label>
+                    <content parameter="WINDOW_FILTER"/>
+                    <tooltip id="filterpeakwindow_gnps_tooltip">
+                        For each peak in spectrum to be kept, it must be at least 6th most intense peak in a window +/- 50Th around its m/z.
+                    </tooltip>
+                </label>
+            </cell>
+
+            <cell>
+                <input type="select" parameter="WINDOW_FILTER"></input>
+            </cell>
+        </row>
+    </block>
+
+    <block label="Mass Detection Module for MS1">
+        <row>
+            <cell>
+                <input type="checkbox" parameter="massdetect_ms1.run"/>
+                <label>
+                    <content parameter="massdetect_ms1.run"/>
+                    <tooltip id='massdetect'>
+                        The Mass detection module generates a list of masses (ions) for each scan in the raw data file. Several algorithms are provided for this step. The choice of the optimal algorithm depends on the raw data characteristics (mass resolution, mass
+                        precision, peak shape, noise). In case the raw data is already centroided, only one algorithm (Centroid mass detector) can be used. Other algorithms work only with continuous type data.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <label>
+                    <content parameter="massdetect_ms1.noiselevel"/>
+                    <tooltip id='massdetect.noiselevel_help'>Intensities less than this value are interpreted as noise.</tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="massdetect_ms1.noiselevel">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+    </block>
+
+    <block label="Mass Detection Module for MS2">
+        <row>
+            <cell>
+                <input type="checkbox" parameter="massdetect_ms2.run"/>
+                <label>
+                    <content parameter="massdetect_ms2.run"/>
+                    <tooltip id='massdetect'/>
+                </label>
+            </cell>
+            <cell>
+                <label>
+                    <content parameter="massdetect_ms2.noiselevel"/>
+                    <tooltip id='massdetect.noiselevel_help'/>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="massdetect_ms2.noiselevel">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+    </block>
+
+    <block label="Chromatogram Builder Module">
+        <row>
+            <cell>
+                <input type="checkbox" parameter="chromobuilder.run"/>
+                <label>
+                    <content parameter="chromobuilder.run"/>
+                    <tooltip id='chromobuilder_help'>
+                        The Chromatogram builder takes mass lists generated for each MS scan (see Mass detection) and builds a chromatogram for each mass that can be detected continuously over the scans. Later, these chromatograms may be deconvoluted into individual peaks
+                        by the Deconvolution module.
+                    </tooltip>
+                </label>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="chromobuilder.min_time"/>
+                    <tooltip id='min_time_help'>
+                        Minimum time span over which the same ion must be observed in order to be recognized as a chromatogram. The optimal value depends on the chromatography system setup. The best way to set this parameter is by studying the raw data and determining what
+                        is the typical time span of chromatographic peaks.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="chromobuilder.min_time">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="chromobuilder.min_height"/>
+                    <tooltip id='min_height_help'>
+                        Minimum intensity of the highest data point in the chromatogram. If chromatogram height is below this level, it is discarded.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="chromobuilder.min_height">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="chromobuilder.abstolerance"/>
+                    <tooltip id='chromobuilder.abstolerance_help'>
+                        Maximum m/z difference of data points in consecutive scans in order to be connected to the same chromatogram.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="chromobuilder.abstolerance">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+            <cell>
+                <label>
+                    <content parameter="chromobuilder.ppmtolerance"/>
+                    <tooltip id='chromobuilder.abstolerance_help'/>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="chromobuilder.ppmtolerance">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+    </block>
+
+    <block label="Deconvolution Module">
+        <row>
+            <cell>
+                <input type="checkbox" parameter="deconv.run"/>
+                <label>
+                    <content parameter="deconv.run"/>
+                    <tooltip id='deconv'>
+                        Following the detection of chromatograms by the Chromatogram builder, chromatograms have to be deconvoluted into individual peaks. The Deconvolution module provides several algorithms for this purpose.
+                    </tooltip>
+                </label>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content>Peak Duration Range (min)</content>
+                    <tooltip id='deconv.peak_help'>
+                        Range of acceptable peak lengths
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="deconv.peak_min">
+                    <attribute name="size" value="10"/>
+                </input>
+                <label>
+                    <content>to</content>
+                </label>
+                <input type="text" parameter="deconv.peak_max">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="deconv.ms2_mzrange.run"/>
+                    <tooltip id='deconv.ms2_mzrange_help'>
+                        Maximum allowed difference between the m/z value of MS1 and the m/z value of precursor ion of MS2 scan (in Daltons) to be considered belonging to the same feature. If not activate, the m/z tolerance set above will be used.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="checkbox" parameter="deconv.ms2_mzrange.run"/>
+                <input type="text" parameter="deconv.ms2_mzrange">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+            <cell>
+                <label>
+                    <content parameter="deconv.ms2_rtrange.run"/>
+                    <tooltip id='deconv.rtrange_help'>
+                        Maximum allowed difference between the retention time value of MS1 scan and the retention time value of the MS2 scan (in min) to be considered belonging to the same feature.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="checkbox" parameter="deconv.ms2_rtrange.run"/>
+                <input type="text" parameter="deconv.ms2_rtrange">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="deconv.algorithm"/>
+                    <tooltip id='deconv.algorithm_help'>
+                        Please choose either the Baseline Cut-Off or Local Minimum Search algorithms to use when running the deconvolution module.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="select" parameter="deconv.algorithm"/>
+                <label>
+                    <content>(Adjust Only Selected Algorithm)</content>
+                </label>
+            </cell>
+
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content></content>
+                </label>
+            </cell>
+            <cell>
+                <label>
+                    <content></content>
+                </label>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content>LOCAL MINIMUM SEARCH</content>
+                    <tooltip id='localmin_help'>
+                        This method is suitable for chromatograms with little noise and nice peak shapes. It searches for local minima in the chromatogram and separates individual peaks at these minimal points. Individual peaks are recognized if they fulfill the height and
+                        duration requirements. The Chromatographic threshold parameter can be used if the chromatogram contains some background noise.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text">
+                    <attribute name="size" value="0"/>
+                </input>
+            </cell>
+            <cell>
+                <label>
+                    <content>BASELINE CUT-OFF ALGORITHM</content>
+                    <tooltip id='baseline_help'>
+                        This method is very simple and useful to demonstrate the functionality of chromatogram deconvolution. First, the algorithm removes the lowest part of the chromatogram below a Baseline level specified by the user. Remaining peaks that stand out above
+                        the baseline level are recognized if they fulfill the height and duration requirements.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text">
+                    <attribute name="size" value="0"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="deconv.localmin.threshold"/>
+                    <tooltip id='deconv.localmin.threshold_help'>
+                        Threshold for removing noise. The algorithm finds such intensity that given percentage ofthe chromatogram data points is belowthatintensity, and removes all data points below that level.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="deconv.localmin.threshold">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+            <cell>
+                <label>
+                    <content parameter="deconv.baseline.min_peakheight"/>
+                    <tooltip id='deconv.baseline.min_help'>
+                        Minimum acceptable peak height (absolute intensity)
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="deconv.baseline.min_peakheight">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="deconv.localmin.range"/>
+                    <tooltip id='deconv.localmin.range_help'>
+                        If a local minimum is minimal in this range of retention time, it will be considered a border between two peaks.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="deconv.localmin.range">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+            <cell>
+                <label>
+                    <content parameter="deconv.baseline.level"/>
+                    <tooltip id='deconv.baseline.level_help'>
+                        Level below which all data points of the chromatogram are removed (absolute intensity)
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="deconv.baseline.level">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="deconv.localmin.relheight"/>
+                    <tooltip id='deconv.localmin.relheight_help'>
+                        Minimum height of a peak relative to the chromatogram top data point.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="deconv.localmin.relheight">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="deconv.localmin.absheight"/>
+                    <tooltip id='deconv.localmin.absheight_lyrics'>
+                        Minimum absolute height of a peak to be recongized
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="deconv.localmin.absheight">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="deconv.localmin.ratio"/>
+                    <tooltip id='deconv.localmin.ratio_help'>
+                        Minimum absolute height of a peak to be recongized
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="deconv.localmin.ratio">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+    </block>
+
+    <block label="Peak Grouping Module">
+        <row>
+            <cell>
+                <input type="checkbox" parameter="peakgroup.run"/>
+                <label>
+                    <content parameter="peakgroup.run"/>
+                    <tooltip id='peakgroup'>
+                        This module attepts to find those peaks in a peak list, which form an isotope pattern. When isotope pattern is found, the information about the charge and isotope ratios is saved, and additional isotopic peaks are removed from the peak list. Only the
+                        highest isotope is kept.
+                    </tooltip>
+                </label>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="peakgroup.isopattern_only"/>
+                    <tooltip id='peakgroup.isopattern_help'>
+                        Remove all features without an isotope pattern.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="checkbox" parameter="peakgroup.isopattern_only"/>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="peakgroup.min_interval"/>
+                    <tooltip id='peakgroup.min_help'>
+                        For each feature cut off both sides of the chromatogram that fall below the given intensity threshold (in relation to the maximum intensity of the feature)
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="peakgroup.min_interval">
+                    <attribute name="size" value="10"/>
+                </input>
+                <label>
+                    <content>%</content>
+                </label>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="peakgroup.min_overlap"/>
+                    <tooltip id='peakgroup.overlap_help'>
+                        Two features might coelute if the intersection of their time intervals covers at least the given percentage of feature intensity.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="peakgroup.min_overlap">
+                    <attribute name="size" value="10"/>
+                </input>
+                <label>
+                    <content>%</content>
+                </label>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="peakgroup.min_corr"/>
+                    <tooltip id='peakgroup.corr_help'>
+                        Minimal correlation coefficient for two coeluting features.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="peakgroup.min_corr">
+                    <attribute name="size" value="10"/>
+                </input>
+                <label>
+                    <content>%</content>
+                </label>
+            </cell>
+        </row>
+    </block>
+
+    <block label="Join Aligner Module">
+        <row>
+            <cell>
+                <input type="checkbox" parameter="join.run"/>
+                <label>
+                    <content parameter="join.run"/>
+                    <tooltip id='join'>
+                        This method aligns detected peaks in different samples through a match score. This score is calculated based on the mass and retention time of each peak and ranges of tolerance stipulated in the parameters setup dialog.
+                    </tooltip>
+                </label>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content>m/z Tolerance</content>
+                    <tooltip id='mztolerance_help'>Maximum allowed difference between two m/zvalues to be considered the same. The value is specified both as absolute tolerance (in m/z) and relative tolerance (in ppm). The tolerance range is calculated using maximum of
+                        the absolute and relative tolerances.</tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="join.mz_abstolerance">
+                    <attribute name="size" value="10"/>
+                </input>
+                <label>
+                    <content>m/z</content>
+                </label>
+                <label>
+                    <content>or</content>
+                </label>
+                <input type="text" parameter="join.mz_ppmtolerance">
+                    <attribute name="size" value="10"/>
+                </input>
+                <label>
+                    <content>ppm</content>
+                </label>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="join.mzweight"/>
+                    <tooltip id='join.mzweight_help'>
+                        Score for perfectly matching m/z values
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="join.mzweight">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="join.rettolerance"/>
+                    <tooltip id='join.rettolerance_help'>
+                        Maximum allowed difference between two retention time values.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="join.rettolerance">
+                    <attribute name="size" value="10"/>
+                </input>
+                <input type="select" parameter="join.rettolerance_type"/>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="join.rtweight"/>
+                    <tooltip id='join.rtweight_help'>
+                        Score for perfectly matching RT values
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="join.rtweight">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+    </block>
+
+    <block label="Peak Finder Module">
+        <row>
+            <cell>
+                <input type="checkbox" parameter="peakfinder.run"/>
+                <label>
+                    <content parameter="peakfinder.run"/>
+                    <tooltip id='peakfinder'>
+                        Following alignment, the resulting peak list may contain missing peaks as a product of a deficient peak detection or a mistake in the alignment of different peak lists.
+                    </tooltip>
+                </label>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="peakfinder.intensitytolerance"/>
+                    <tooltip id='peakfinder.intensitytolerance_help'>
+                        Maximum allowed deviation from expected shape of a peak in a chromatographic direction.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="peakfinder.intensitytolerance">
+                    <attribute name="size" value="10"/>
+                </input>
+                <label>
+                    <content>%</content>
+                </label>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content>m/z Tolerance</content>
+                    <tooltip id='mztolerance_help'/>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="peakfinder.mz_abstolerance">
+                    <attribute name="size" value="10"/>
+                </input>
+                <label>
+                    <content>m/z</content>
+                </label>
+                <label>
+                    <content>or</content>
+                </label>
+                <input type="text" parameter="peakfinder.mz_ppmtolerance">
+                    <attribute name="size" value="10"/>
+                </input>
+                <label>
+                    <content>ppm</content>
+                </label>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="peakfinder.rettolerance"/>
+                    <tooltip id='rettolerance_help'>
+                        Maximum allowed difference between two retention time values
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="text" parameter="peakfinder.rettolerance">
+                    <attribute name="size" value="10"/>
+                </input>
+                <input type="select" parameter="peakfinder.rettolerance_type"/>
+            </cell>
+        </row>
+    </block>
+
+    <block label="Rows Filter Module">
+        <row>
+            <cell>
+                <input type="checkbox" parameter="rowsfilter.run"/>
+                <label>
+                    <content parameter="rowsfilter.run"/>
+                    <tooltip id='rowsfilter'>
+                        This module deletes all rows in a selected peak list that do not meet the requirements defined by the user. These requirements can be the minimum number of peaks in the row, the minimum number of peaks in an isotope pattern, peak duration or a m/z vs
+                        retention time window. When an aligned peak list, i.e. multiple peaks per row, is filtered then the average of each row's peak duration, m/z and retention time values are used to filter the row.
+                    </tooltip>
+                </label>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="rowsfilter.minpeaks"/>
+                    <tooltip id='rowsfilter.minpeaks_help'>
+                        Minimum number of peaks detection requirewd per row. Values less than 1 willbe interpreted as a %-value of the total # samples in the peak list. The value will be rounded down to the nearest whole number.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="checkbox" parameter="rowsfilter.minpeaks_run"/>
+                <input type="text" parameter="rowsfilter.minpeaks">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="rowsfilter.minpeaksisopatt_run"/>
+                    <tooltip id='rowsfilter.minpeaksisopatt_help'>
+                        Minimum number of peaks required in an isotope pattern.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="checkbox" parameter="rowsfilter.minpeaksisopatt_run"/>
+                <input type="text" parameter="rowsfilter.minpeaksisopatt">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="rowsfilter.rettime_run"/>
+                    <tooltip id='retentiontime_help'>Retention time range in minutes</tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="checkbox" parameter="rowsfilter.rettime_run"/>
+                <input type="text" parameter="rowsfilter.rettime_min">
+                    <attribute name="size" value="10"/>
+                </input>
+                <label>
+                    <content>to</content>
+                </label>
+                <input type="text" parameter="rowsfilter.rettime_max">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="rowsfilter.durtime_run"/>
+                    <tooltip id='rowsfilter.durtime_help'>
+                        Permissible range of (avg) peak durations per row.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="checkbox" parameter="rowsfilter.durtime_run"/>
+                <input type="text" parameter="rowsfilter.durtime_min">
+                    <attribute name="size" value="10"/>
+                </input>
+                <label>
+                    <content>to</content>
+                </label>
+                <input type="text" parameter="rowsfilter.durtime_max">
+                    <attribute name="size" value="10"/>
+                </input>
+            </cell>
+        </row>
+        <row>
+            <cell>
+                <label>
+                    <content parameter="rowsfilter.resetpeaknum"/>
+                    <tooltip id='rowsfilter.resetpeaknum_help'>
+                        If checked, the row number of original peak list will be reset.
+                    </tooltip>
+                </label>
+            </cell>
+            <cell>
+                <input type="checkbox" parameter="rowsfilter.resetpeaknum"/>
+            </cell>
+        </row>
+    </block>
+
+</interface>
