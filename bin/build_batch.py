@@ -376,8 +376,10 @@ def write_steps(flowparams, params, output):
         batchsteps.append(write_chromobuilder(flowparams))
     if flowparams.has_key('deconv.run'):
         batchsteps.append(write_deconv(flowparams))
-    if flowparams.has_key('peakgroup.run'):
-        batchsteps.append(write_peakgroup(flowparams))
+#    if flowparams.has_key('peakgroup.run'):
+#        batchsteps.append(write_peakgroup(flowparams))
+    if flowparams.has_key('isogroup.run'):
+				batchsteps.append(write_isogroup(flowparams))
     if flowparams.has_key('join.run'):
         batchsteps.append(write_joinaligner(flowparams))
     if flowparams.has_key('peakfinder.run'):
